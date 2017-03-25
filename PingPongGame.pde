@@ -26,24 +26,25 @@ void setup(){
   paddleHeight = 60;
   paddleXPos = width - paddleWidth;
   paddleYPos = height / 2;
+  
+  setup_TUIO();
 }
 
 void draw(){
-  background(0);
+  background(255);
   noStroke();
   fill(255, 0, 0);
+  // Draw the ball
   ellipse(xPos + (speed * xDirection), yPos, radius, radius);
   xPos = xPos + (speed * xDirection);
   
   fill(0, 255, 0);
+  // Draw the paddle
   rect(paddleXPos, paddleYPos, paddleWidth, paddleHeight);
-  
-  fill(0, 0, 255);
-  ellipse(paddleXPos, paddleYPos, 5, 5);
   
   // If the ball hits the paddle, change the movement direction
   if(onCollision()){
-    print("Chocaste");
+    // print("Chocaste");
     xDirection = xDirection * (-1);
   }
   
@@ -51,6 +52,8 @@ void draw(){
   if(xPos > width){
     noLoop();
   }
+    draw_TUIO();
+
 }
 
 /* Check if the ball hits the paddle
@@ -60,26 +63,46 @@ boolean onCollision(){
   if(xPos > paddleXPos - (radius / 2) || xPos < (radius / 2) && (xPos <= paddleXPos + paddleWidth) && (yPos >= paddleYPos) && yPos <= (paddleYPos + paddleHeight)){
     return true;
   }
-  
   return false;
 }
 
+/*
 void keyPressed(){
   if (key == CODED) {
     if (keyCode == UP) {
-      movePaddleUp();
+      paddleYPos = paddleYPos - 5;
+      // Check if the ball has reached the top of the screen
+      if(paddleYPos <= 0){
+        // If so, stop the ball from moving up
+        paddleYPos = 0;
+      }
     }
     else if (keyCode == DOWN) {
-      movePaddleDown();
+      paddleYPos = paddleYPos + 5;
+      // Check if the ball has reached the bottom of the screen
+      if(paddleYPos + paddleHeight >= height){
+        // If so, stop the ball from moving down
+        paddleYPos = height - paddleHeight;
+      }
     }
   }
-}
+}*/
 
-void movePaddleUp(){
-  paddleYPos = paddleYPos - 5;
-}
-
-
-void movePaddleDown(){
-  paddleYPos = paddleYPos + 5;
+/* 
+  Move the paddle based on the TUIO object position
+  Parameters: the object position in Y axis
+  Return: nothing
+*/
+void movePaddle(int tPosY){
+  // Check if the ball has reached the top of the screen
+    if(paddleYPos <= 0){
+      // If so, stop the ball from moving up
+      paddleYPos = 0;
+    }
+    // Check if the ball has reached the bottom of the screen
+    if(paddleYPos + paddleHeight >= height){
+      // If so, stop the ball from moving down
+      paddleYPos = height - paddleHeight;
+    }
+  paddleYPos = tPosY;
 }
