@@ -67,6 +67,7 @@ void draw_TUIO()
   for (int i=0;i<tuioObjectList.size();i++) {
      TuioObject tobj = tuioObjectList.get(i);
      println("Object position in screen: " + tobj.getScreenX(width) + ", " + tobj.getScreenY(height));
+     println("Paddle position in screen: " + paddleYPos);
      stroke(0);
      fill(0);
      // Operate the origin of the coordinate system
@@ -78,7 +79,6 @@ void draw_TUIO()
      // Draw a rectangle behind the circle
      rect(-obj_size/2,-obj_size/2,obj_size,obj_size);
      popMatrix();
-     // Color the ellipse red
      fill(255, 0, 0);
      // Move the ellipse along the TUIO Object
      ellipse(tobj.getScreenX(width), tobj.getScreenY(height), 30, 30);
