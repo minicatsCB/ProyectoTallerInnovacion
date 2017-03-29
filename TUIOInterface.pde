@@ -82,9 +82,14 @@ void draw_TUIO()
      fill(255, 0, 0);
      // Move the ellipse along the TUIO Object
      ellipse(tobj.getScreenX(width), tobj.getScreenY(height), 30, 30);
-     fill(255);
-     text(tobj.getSymbolID(), tobj.getScreenX(width), tobj.getScreenY(height));  // Object identifier
-     movePaddle(tobj.getScreenY(height));
+     pushStyle();
+     fill(0,0,255);
+     textSize(30);
+     text(tobj.getSymbolID() + "  " + tobj.getScreenY(height), tobj.getScreenX(width), tobj.getScreenY(height));  // Object identifier
+     popStyle();
+     int yJuego = (int)map(tobj.getScreenY(height), 60, height-60, 0, height);
+     constrain(yJuego, 0, height);
+     movePaddle1(yJuego);
    }
    
    ArrayList<TuioCursor> tuioCursorList = tuioClient.getTuioCursorList();
@@ -189,5 +194,10 @@ void removeTuioBlob(TuioBlob tblb) {
 // called at the end of each TUIO frame
 void refresh(TuioTime frameTime) {
   if (verbose) println("frame #"+frameTime.getFrameID()+" ("+frameTime.getTotalMilliseconds()+")");
-  if (callback) redraw();
+  if (callback &&stopLoop){
+    println("Game Over");
+  }
+  else{
+    redraw();
+  }
 }
