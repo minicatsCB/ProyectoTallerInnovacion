@@ -1,11 +1,11 @@
-float xSpeed = 5;
-float ySpeed = 1;
+float xSpeed = 8;
+float ySpeed = 2;
 float xPosition = 50;
 float yPosition = 50;
  
  
-float ballWidth = 40;
-float ballHeight = 40;
+float ballWidth = 30;
+float ballHeight = 30;
  
  
 void setup()
