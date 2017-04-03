@@ -1,4 +1,4 @@
-float xSpeed = 8;
+float xSpeed = 5;
 float ySpeed = 2;
 float xPosition = 50;
 float yPosition = 50;
@@ -14,6 +14,7 @@ void setup()
   size(600, 400);
   background(255);
   smooth();
+  setup_TUIO();
 }
  
 void draw()
@@ -30,8 +31,8 @@ void draw()
  
   ySpeed +=1;
   xSpeed *=.9975;
-  xPosition += xSpeed;
-  yPosition += ySpeed;
+  //xPosition += xSpeed;
+  //yPosition += ySpeed;
  
 // Cambia la dirección después de golpear a la pared derecha
   if (xPosition > width-ballWidth/2)
@@ -59,13 +60,20 @@ void draw()
   {
     xSpeed *=.9975;
   }
+  draw_TUIO();
 }
  
 // Tirar la pelota
-void mouseDragged()
-{
-  xPosition = mouseX;
-  yPosition = mouseY;
-  xSpeed = mouseX - pmouseX;
-  ySpeed = mouseY - pmouseY;
+//void mouseDragged()
+//{
+//  xPosition = mouseX;
+//  yPosition = mouseY;
+//  xSpeed = mouseX - pmouseX;
+//  ySpeed = mouseY - pmouseY;
+//}
+
+void move_Ball(int posX, int posY){
+  xPosition=posX;
+  yPosition=posY;
+    
 }

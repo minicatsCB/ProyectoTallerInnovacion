@@ -38,11 +38,10 @@ PFont font;
 boolean verbose = false; // print console debug messages
 boolean callback = true; // updates only after callbacks
 
-void setup()
+void setup_TUIO()
 {
   // GUI setup
   noCursor();
-  size(displayWidth,displayHeight);
   noStroke();
   fill(0);
   
@@ -63,9 +62,8 @@ void setup()
 
 // within the draw method we retrieve an ArrayList of type <TuioObject>, <TuioCursor> or <TuioBlob>
 // from the TuioProcessing client and then loops over all lists to draw the graphical feedback.
-void draw()
+void draw_TUIO()
 {
-  background(255);
   textFont(font,18*scale_factor);
   float obj_size = object_size*scale_factor; 
   float cur_size = cursor_size*scale_factor; 
@@ -74,14 +72,16 @@ void draw()
   for (int i=0;i<tuioObjectList.size();i++) {
      TuioObject tobj = tuioObjectList.get(i);
      stroke(0);
-     fill(0,0,0);
+     fill(255,0,0);
      pushMatrix();
      translate(tobj.getScreenX(width),tobj.getScreenY(height));
      rotate(tobj.getAngle());
      rect(-obj_size/2,-obj_size/2,obj_size,obj_size);
      popMatrix();
-     fill(255);
+     fill(255,100,0);
      text(""+tobj.getSymbolID(), tobj.getScreenX(width), tobj.getScreenY(height));
+     ellipse(tobj.getScreenX(width), tobj.getScreenY(height), 50,50);
+     move_Ball(tobj.getScreenX(width),tobj.getScreenY(height));
    }
    
    ArrayList<TuioCursor> tuioCursorList = tuioClient.getTuioCursorList();
