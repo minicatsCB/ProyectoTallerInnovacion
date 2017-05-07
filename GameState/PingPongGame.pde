@@ -2,8 +2,8 @@
 float radius = 15;  // The radius of the ball
 int xPos;  // The ball position in the X axis
 int yPos;  // The ball position in the Y axis
-int speed;  // The ball speed
-int xDirection;  // (1) -> To the right, (-1) -> To the left
+int xspeed, yspeed;  // The ball speed
+int xdirection, ydirection;  // (1) -> To the right, (-1) -> To the left
 
 /* Paddle settings */
 int paddleWidth;
@@ -16,19 +16,21 @@ int paddle2Height;
 int paddle2XPos;
 int paddle2YPos;
 
-
-
 boolean stopLoop = false; // If true, stop drawing
 
+PImage bg;
 
 void setup_PingPongGame(){
+  bg = loadImage("background_0.jpg");
   // Start from the center of the screen
   xPos = width / 2;
   yPos = height / 2;
   // Start moving to the right
-  xDirection = 1;
+  xdirection = 1;
+  ydirection = 1;
   // Start moving at this speed
-  speed = 1;
+  xspeed = 5;
+  yspeed = 5;
   // Draw a paddle
   paddleWidth = 20;
   paddleHeight = 60;
@@ -43,14 +45,21 @@ void setup_PingPongGame(){
 }
 
 void draw_PingPongGame(){
-  background(255);
+  background(bg);
   noStroke();
   fill(255, 0, 0);
   // Draw the ball
-  ellipse(xPos + (speed * xDirection), yPos, radius * 2, radius * 2);
-  xPos = xPos + (speed * xDirection);
+  xPos = xPos + (xspeed * xdirection);
+  yPos = yPos + (yspeed * ydirection);
+  if (xPos > width-radius || xPos < radius) {
+    xdirection *= -1;
+  }
+  if (yPos > height-radius || yPos < radius) {
+    ydirection *= -1;
+  }
+  
   fill(0, 255, 0);
-  ellipse(xPos, yPos, 10, 10);
+  ellipse(xPos, yPos, radius * 2, radius * 2);
   
   // Draw the paddle
   fill(0, 255, 0);
@@ -66,7 +75,7 @@ void draw_PingPongGame(){
   
   // If the ball hits the paddle, change the movement direction
   if(onCollision()){
-    xDirection = xDirection * (-1);
+    xdirection = xdirection * (-1);
   }
   
   detectFiducialMarkPingPongGame();
