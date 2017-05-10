@@ -3,7 +3,12 @@ int circleSize = 90;  // Diameter of circle
 color circleColor, circleHighlight, currentColor;  // Circle aesthetics
 boolean circleOver;  // Is the mouse over the button?
 
+PImage img1;
+PImage imgTitle;
+
 void setup_GameMenu(){
+  img1 = loadImage("ping-pong-face.png");
+  imgTitle = loadImage("title.png");
   circleColor = color(150);
   circleHighlight = color(200);
   circleX = width / 2;
@@ -12,7 +17,7 @@ void setup_GameMenu(){
 
 void draw_GameMenu(){
   update();
-  background(255, 0, 0);
+  background(17, 69, 63);
   
   // If the mouse is over circle, change its color
   if(circleOver){
@@ -26,7 +31,11 @@ void draw_GameMenu(){
   ellipse(circleX, circleY, circleSize, circleSize);
   
   fill(0, 255, 0);
+  textSize(10);
   text("Start", circleX, circleY);
+  
+  image(img1, width - img1.width, height - img1.height);
+  image(imgTitle, 0, 0);
 }
 
 /*

@@ -16,12 +16,12 @@ int paddle2Height;
 int paddle2XPos;
 int paddle2YPos;
 
-
-
 boolean stopLoop = false; // If true, stop drawing
 
+PImage bg;
 
 void setup_PingPongGame(){
+  bg = loadImage("background_0.jpg");
   // Start from the center of the screen
   xPos = width / 2;
   yPos = height / 2;
@@ -29,8 +29,10 @@ void setup_PingPongGame(){
   xdirection = 1;
   ydirection = 1;
   // Start moving at this speed
-  xspeed = 1;
-  yspeed = 1;
+
+  xspeed = 3;
+  yspeed = 3;
+
   // Draw a paddle
   paddleWidth = 20;
   paddleHeight = 60;
@@ -45,7 +47,7 @@ void setup_PingPongGame(){
 }
 
 void draw_PingPongGame(){
-  background(255);
+  background(bg);
   noStroke();
   fill(255, 0, 0);
   // Draw the ball
@@ -57,18 +59,19 @@ void draw_PingPongGame(){
   if (yPos > height-radius || yPos < radius) {
     ydirection *= -1;
   }
-  
-  fill(0, 255, 0);
+
+  fill(255, 0, 0);
+
   ellipse(xPos, yPos, radius * 2, radius * 2);
   
   // Draw the paddle
-  fill(0, 255, 0);
+  fill(255);
   rect(paddleXPos, paddleYPos, paddleWidth, paddleHeight);
   fill(0, 0, 255);
   ellipse(paddleXPos, paddleYPos, 10, 10);
   
   // Draw the paddle
-  fill(0, 255, 0);
+  fill(255);
   rect(paddle2XPos, paddle2YPos, paddle2Width, paddle2Height);
   fill(0, 0, 255);
   ellipse(paddle2XPos, paddle2YPos, 10, 10);
