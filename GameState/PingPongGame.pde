@@ -29,8 +29,8 @@ void setup_PingPongGame(){
   xdirection = 1;
   ydirection = 1;
   // Start moving at this speed
-  xspeed = 5;
-  yspeed = 5;
+  xspeed = 3;
+  yspeed = 3;
   // Draw a paddle
   paddleWidth = 20;
   paddleHeight = 60;
@@ -58,17 +58,17 @@ void draw_PingPongGame(){
     ydirection *= -1;
   }
   
-  fill(0, 255, 0);
+  fill(255, 0, 0);
   ellipse(xPos, yPos, radius * 2, radius * 2);
   
   // Draw the paddle
-  fill(0, 255, 0);
+  fill(255);
   rect(paddleXPos, paddleYPos, paddleWidth, paddleHeight);
   fill(0, 0, 255);
   ellipse(paddleXPos, paddleYPos, 10, 10);
   
   // Draw the paddle
-  fill(0, 255, 0);
+  fill(255);
   rect(paddle2XPos, paddle2YPos, paddle2Width, paddle2Height);
   fill(0, 0, 255);
   ellipse(paddle2XPos, paddle2YPos, 10, 10);
