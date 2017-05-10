@@ -1,3 +1,5 @@
+//import processing.video.*;
+
 int _circleX, _circleY;  // Position of circle button
 int _circleSize = 90;  // Diameter of circle
 color _circleColor, _circleHighlight;  // Circle aesthetics
@@ -7,16 +9,47 @@ int squarePosX, squarePosY;  // The position of the square that wait for the fid
 ArrayList<TuioObject> tuioObjectListToIgnore = new ArrayList<TuioObject>();
 int marksCounter = 0;  // Count the number of marks that has been centered
 
+//Capture cam;
+
 void setup_GameInstructions(){
   _circleColor = color(160);
   _circleHighlight = color(210);
   _circleX = width / 2 + 50;
   _circleY = height / 2 + 50;
+  
+  /*
+  String[] cameras = Capture.list();
+  
+  if (cameras.length == 0) {
+    println("There are no cameras available for capture.");
+    exit();
+  } else {
+    println("Available cameras:");
+    for (int i = 0; i < cameras.length; i++) {
+      println(cameras[i]);
+    }
+    
+    // The camera can be initialized directly using an 
+    // element from the array returned by list():
+    cam = new Capture(this, 1280, 720);
+    cam.start();     
+  }   
+  */
 }
 
 void draw_GameInstructions(){
   _update();
-  background(0, 255, 0);
+  background(17, 69, 110);
+  /*
+  if (cam.available() == true) {
+    cam.read();
+  }
+  image(cam, 0, 0);
+  // The following does the same, and is faster when just drawing the image
+  // without any additional resizing, transformations, or tint.
+  //set(0, 0, cam);
+  filter(BLUR, 10);  // Blur the background video
+  */
   
   // If the mouse is over circle, change its color
   if(_circleOver){
