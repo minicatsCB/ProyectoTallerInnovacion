@@ -5,7 +5,7 @@ final int statePingPongGame = 2;
 int stateOfGame = stateGameMenuScreenDisplay;
 
 void setup(){
-  size(400, 400);
+  size(1280, 720);
   setup_GameMenu();
   setup_GameInstructions();
   setup_PingPongGame();  

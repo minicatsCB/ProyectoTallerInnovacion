@@ -1,22 +1,73 @@
+//import processing.video.*;
+
 int _circleX, _circleY;  // Position of circle button
 int _circleSize = 90;  // Diameter of circle
 color _circleColor, _circleHighlight;  // Circle aesthetics
 boolean _circleOver;  // Is the mouse over the button?
-int squarePosX, squarePosY;  // The position of the square that wait for the fiducial mark
+
 // The objects in this list are ignored once the have been saved in saveFiducilMark()
 ArrayList<TuioObject> tuioObjectListToIgnore = new ArrayList<TuioObject>();
 int marksCounter = 0;  // Count the number of marks that has been centered
+
+class Square{
+  int xpos, ypos;  // The position of the square that wait for the fiducial mark
+  int margin;  // The distance from the borders of the original square to the borders of the smaller one
+  int squareWidth;  // The size of the original square
+  
+  public Square(int xpos, int ypos, int margin, int squareWidth){
+    this.xpos = xpos;
+    this.ypos = ypos;
+    this.margin = margin;
+    this.squareWidth = squareWidth;
+  }
+}
+
+//Capture cam;
+
+Square square1;
 
 void setup_GameInstructions(){
   _circleColor = color(160);
   _circleHighlight = color(210);
   _circleX = width / 2 + 50;
   _circleY = height / 2 + 50;
+  
+  
+  
+  /*
+  String[] cameras = Capture.list();
+  
+  if (cameras.length == 0) {
+    println("There are no cameras available for capture.");
+    exit();
+  } else {
+    println("Available cameras:");
+    for (int i = 0; i < cameras.length; i++) {
+      println(cameras[i]);
+    }
+    
+    // The camera can be initialized directly using an 
+    // element from the array returned by list():
+    cam = new Capture(this, 1280, 720);
+    cam.start();     
+  }   
+  */
 }
 
 void draw_GameInstructions(){
   _update();
-  background(0, 255, 0);
+  background(17, 69, 110);
+  square1 = new Square(width / 2 - 100, height / 2 - 100, 30, 100);
+  /*
+  if (cam.available() == true) {
+    cam.read();
+  }
+  image(cam, 0, 0);
+  // The following does the same, and is faster when just drawing the image
+  // without any additional resizing, transformations, or tint.
+  //set(0, 0, cam);
+  filter(BLUR, 10);  // Blur the background video
+  */
   
   // If the mouse is over circle, change its color
   if(_circleOver){
@@ -33,21 +84,19 @@ void draw_GameInstructions(){
   text("Start", _circleX, _circleY);
   
   fill(150, 156, 123);
-  rect(width / 2 - 100, height / 2 - 100, 100, 100);
-  squarePosX = width / 2 - 100;
-  squarePosY = height / 2 - 100;
+  rect(square1.xpos, square1.ypos, square1.squareWidth, square1.squareWidth);
   
    
   fill(0);
-  ellipse(squarePosX  + 30, squarePosY + 30, 10 , 10);  // 30 es el margen
-  ellipse(squarePosX  + 100 - 30, squarePosY + 30, 10 , 10);  // 100 es el largo del rectángulo original
-  ellipse(squarePosX  + 30, squarePosY + 100 - 30, 10 , 10);
-  ellipse(squarePosX  + 100 - 30, squarePosY + 100 - 30, 10 , 10);
+  ellipse(square1.xpos  + square1.margin, square1.ypos + square1.margin, 10 , 10);  // 30 es el margen
+  ellipse(square1.xpos  + square1.squareWidth - square1.margin, square1.ypos + square1.margin, 10 , 10);  // 100 es el largo del rectángulo original
+  ellipse(square1.xpos  + square1.margin, square1.ypos + square1.squareWidth - square1.margin, 10 , 10);
+  ellipse(square1.xpos  + square1.squareWidth - square1.margin, square1.ypos + square1.squareWidth - square1.margin, 10 , 10);
   
   detectFiducialMarkInstructions();
   
+  // If the two players have been saved, pass to the game
   if(marksCounter == 2){
-     // Pasar a PingPongGame
     stateOfGame = statePingPongGame;
   }
   
@@ -61,7 +110,7 @@ void saveFiducialMark(TuioObject tobj){
   
   if(marksCounter != 2){
     println("Quedan marcas por centrar");
-    if(markPosX > squarePosX + 30 && markPosX < squarePosX + 100 - 30 && markPosY > squarePosY + 30 && markPosY < squarePosY + 100 - 30){
+    if(markPosX > square1.xpos + square1.margin && markPosX < square1.xpos + square1.squareWidth - square1.margin && markPosY > square1.ypos + square1.margin && markPosY < square1.ypos + square1.squareWidth - square1.margin){
       println("Marca fiducial" + tobj.getSymbolID() + " centrada");
       tuioObjectListToIgnore.add(tobj);
       marksCounter++;
