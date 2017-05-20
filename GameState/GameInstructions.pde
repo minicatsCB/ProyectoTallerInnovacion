@@ -35,15 +35,8 @@ void draw_GameInstructions(){
   
    
   fill(0);
-  ellipse(square1.xpos  + square1.margin, square1.ypos + square1.margin, 10 , 10);
-  ellipse(square1.xpos  + square1.squareWidth - square1.margin, square1.ypos + square1.margin, 10 , 10);
-  ellipse(square1.xpos  + square1.margin, square1.ypos + square1.squareWidth - square1.margin, 10 , 10);
-  ellipse(square1.xpos  + square1.squareWidth - square1.margin, square1.ypos + square1.squareWidth - square1.margin, 10 , 10);
-  
-  ellipse(square2.xpos  + square2.margin, square2.ypos + square2.margin, 10 , 10);
-  ellipse(square2.xpos  + square2.squareWidth - square2.margin, square2.ypos + square2.margin, 10 , 10);
-  ellipse(square2.xpos  + square2.margin, square2.ypos + square2.squareWidth - square2.margin, 10 , 10);
-  ellipse(square2.xpos  + square2.squareWidth - square2.margin, square2.ypos + square2.squareWidth - square2.margin, 10 , 10);
+  drawSquare(square1);
+  drawSquare(square2);
   
   detectFiducialMarkInstructions();
   
@@ -54,6 +47,13 @@ void draw_GameInstructions(){
   
   fill(255, 0, 0);
   ellipse(square2.xpos, square2.ypos, 10, 10);
+}
+
+void drawSquare(Square square){
+  ellipse(square.xpos  + square.margin, square.ypos + square.margin, 10 , 10);
+  ellipse(square.xpos  + square.squareWidth - square.margin, square.ypos + square.margin, 10 , 10);
+  ellipse(square.xpos  + square.margin, square.ypos + square.squareWidth - square.margin, 10 , 10);
+  ellipse(square.xpos  + square.squareWidth - square.margin, square.ypos + square.squareWidth - square.margin, 10 , 10);
 }
 
 void saveFiducialMarks(TuioObject tobj){  
