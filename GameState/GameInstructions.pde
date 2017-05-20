@@ -1,13 +1,7 @@
-//import processing.video.*;
-
-int _circleX, _circleY;  // Position of circle button
-int _circleSize = 90;  // Diameter of circle
-color _circleColor, _circleHighlight;  // Circle aesthetics
-boolean _circleOver;  // Is the mouse over the button?
-
 // The objects in this list are ignored once the have been saved in saveFiducilMark()
 ArrayList<TuioObject> tuioObjectListToIgnore = new ArrayList<TuioObject>();
 int marksCounter = 0;  // Count the number of marks that has been centered
+boolean mark1Centered, mark2Centered ;
 
 class Square{
   int xpos, ypos;  // The position of the square that wait for the fiducial mark
@@ -22,76 +16,34 @@ class Square{
   }
 }
 
-//Capture cam;
-
-Square square1;
+Square square1, square2;
 
 void setup_GameInstructions(){
-  _circleColor = color(160);
-  _circleHighlight = color(210);
-  _circleX = width / 2 + 50;
-  _circleY = height / 2 + 50;
-  
-  
-  
-  /*
-  String[] cameras = Capture.list();
-  
-  if (cameras.length == 0) {
-    println("There are no cameras available for capture.");
-    exit();
-  } else {
-    println("Available cameras:");
-    for (int i = 0; i < cameras.length; i++) {
-      println(cameras[i]);
-    }
-    
-    // The camera can be initialized directly using an 
-    // element from the array returned by list():
-    cam = new Capture(this, 1280, 720);
-    cam.start();     
-  }   
-  */
+  mark1Centered = false;
+  mark2Centered = false;
 }
 
 void draw_GameInstructions(){
-  _update();
   background(17, 69, 110);
-  square1 = new Square(width / 2 - 100, height / 2 - 100, 30, 100);
-  /*
-  if (cam.available() == true) {
-    cam.read();
-  }
-  image(cam, 0, 0);
-  // The following does the same, and is faster when just drawing the image
-  // without any additional resizing, transformations, or tint.
-  //set(0, 0, cam);
-  filter(BLUR, 10);  // Blur the background video
-  */
-  
-  // If the mouse is over circle, change its color
-  if(_circleOver){
-    fill(_circleHighlight);
-  }
-  else{
-    fill(_circleColor);
-  }
-  
-  stroke(0);
-  ellipse(_circleX, _circleY, _circleSize, _circleSize);
-  
-  fill(0, 255, 0);
-  text("Start", _circleX, _circleY);
+  int squareSize = 100;
+  square1 = new Square(width / 2 + squareSize, height / 2 - squareSize, 30, squareSize);
+  square2 = new Square(width / 2 - squareSize - squareSize / 2, height / 2 - squareSize, 30, squareSize);
   
   fill(150, 156, 123);
   rect(square1.xpos, square1.ypos, square1.squareWidth, square1.squareWidth);
+  rect(square2.xpos, square2.ypos, square2.squareWidth, square2.squareWidth);
   
    
   fill(0);
-  ellipse(square1.xpos  + square1.margin, square1.ypos + square1.margin, 10 , 10);  // 30 es el margen
-  ellipse(square1.xpos  + square1.squareWidth - square1.margin, square1.ypos + square1.margin, 10 , 10);  // 100 es el largo del rectángulo original
+  ellipse(square1.xpos  + square1.margin, square1.ypos + square1.margin, 10 , 10);
+  ellipse(square1.xpos  + square1.squareWidth - square1.margin, square1.ypos + square1.margin, 10 , 10);
   ellipse(square1.xpos  + square1.margin, square1.ypos + square1.squareWidth - square1.margin, 10 , 10);
   ellipse(square1.xpos  + square1.squareWidth - square1.margin, square1.ypos + square1.squareWidth - square1.margin, 10 , 10);
+  
+  ellipse(square2.xpos  + square2.margin, square2.ypos + square2.margin, 10 , 10);
+  ellipse(square2.xpos  + square2.squareWidth - square2.margin, square2.ypos + square2.margin, 10 , 10);
+  ellipse(square2.xpos  + square2.margin, square2.ypos + square2.squareWidth - square2.margin, 10 , 10);
+  ellipse(square2.xpos  + square2.squareWidth - square2.margin, square2.ypos + square2.squareWidth - square2.margin, 10 , 10);
   
   detectFiducialMarkInstructions();
   
@@ -100,35 +52,70 @@ void draw_GameInstructions(){
     stateOfGame = statePingPongGame;
   }
   
+  fill(255, 0, 0);
+  ellipse(square2.xpos, square2.ypos, 10, 10);
 }
 
-void saveFiducialMark(TuioObject tobj){  
-  fill(255, 255, 255);
-  text("Center fiducial mark 1, please", 0, 0);
-  int markPosX = tobj.getScreenX(width);
-  int markPosY = tobj.getScreenX(height);
-  
+void saveFiducialMarks(TuioObject tobj){  
   if(marksCounter != 2){
     println("Quedan marcas por centrar");
-    if(markPosX > square1.xpos + square1.margin && markPosX < square1.xpos + square1.squareWidth - square1.margin && markPosY > square1.ypos + square1.margin && markPosY < square1.ypos + square1.squareWidth - square1.margin){
-      println("Marca fiducial" + tobj.getSymbolID() + " centrada");
-      tuioObjectListToIgnore.add(tobj);
-      marksCounter++;
+    if(!mark1Centered){
+        fill(255, 255, 255);
+        // Check mark 1
+        if(tobj.getSymbolID() == 1){
+          if(markCenteredInSquare(square1, tobj)){
+            mark1Centered = true;
+            tuioObjectListToIgnore.add(tobj);
+            marksCounter++;
+          }
+        }
+    }
+    if(!mark2Centered){
+      fill(255, 255, 255);
+      text("Center fiducial mark 2, please", width-500, 100);
+      if(tobj.getSymbolID() == 2){
+        if(markCenteredInSquare(square2, tobj)){   
+          mark2Centered = true;
+          tuioObjectListToIgnore.add(tobj);
+          marksCounter++;
+        }
+      }
     }
   }
   else{
-    print("NO quedan marcas por centrar");
+    println("NO quedan marcas por centrar");
+    fill(255, 255, 255);
+    if(!mark1Centered)  text("Center fiducial mark 1, please", 0, 100);
+    if(!mark2Centered) text("Center fiducial mark 2, please", width-500, 100);
   }
 }
+
+boolean markCenteredInSquare(Square targetSquare, TuioObject tobj){
+  int markPosX = tobj.getScreenX(width);
+  int markPosY = tobj.getScreenY(height);
+  if(markPosX > targetSquare.xpos + targetSquare.margin && markPosX < targetSquare.xpos + targetSquare.squareWidth - targetSquare.margin && markPosY > targetSquare.ypos + targetSquare.margin && markPosY < square1.ypos + targetSquare.squareWidth - targetSquare.margin){
+      println("Marca fiducial " + tobj.getSymbolID() + " centrada");
+      return true;
+   }
+   else{
+     println("Marca fiducial " + tobj.getSymbolID() + " NO centrada");
+     return false;
+   }
+}
+
+
+
+
 
 void detectFiducialMarkInstructions(){
   ArrayList<TuioObject> tuioObjectList = tuioClient.getTuioObjectList();
   for (int i=0;i<tuioObjectList.size();i++) {
-     TuioObject tobj = tuioObjectList.get(i);
+     TuioObject tobj = tuioObjectList.get(i);  // Current mark
+     // If we have already saved the mark, skip it
      if(tuioObjectListToIgnore != null && tuioObjectListToIgnore.contains(tobj)){
        continue;
      }
-     println("Object position in screen: " + tobj.getScreenX(width) + ", " + tobj.getScreenY(height));
+    // println("Object position in screen: " + tobj.getScreenX(width) + ", " + tobj.getScreenY(height));
      stroke(0);
      fill(0);
      // Operate the origin of the coordinate system
@@ -149,36 +136,7 @@ void detectFiducialMarkInstructions(){
      text(tobj.getSymbolID() + "  " + tobj.getScreenY(height), tobj.getScreenX(width), tobj.getScreenY(height));  // Object identifier
      popStyle();
      
-     saveFiducialMark(tobj);
+     // hacer esto solo si estamos en la fase de entrar
+     saveFiducialMarks(tobj);
    }
-}
-
-/*
-  Check if the mouse is inside the circle
-  We could merge this method with overCircle,
-  but just in case in the future we want add
-  extra buttons
-*/
-void _update(){
-  if(_overCircle(_circleX, _circleY, _circleSize)){
-    _circleOver = true;
-  }
-  else{
-    _circleOver = false;
-  }
-}
-
-/*
-  Check if the mouse is inside the circle
-  If so, return true, otherwise, return false
-*/
-boolean _overCircle(int x, int y, int diameter){
-  float distX = x - mouseX;
-  float distY = y - mouseY;
-  if(sqrt(sq(distX) + sq(distY)) < diameter / 2){
-    return true;
-  }
-  else{
-    return false;
-  }
 }
