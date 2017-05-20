@@ -1,93 +1,64 @@
-int circleX, circleY;  // Position of circle button
-int circleSize = 90;  // Diameter of circle
-color circleColor, circleHighlight, currentColor;  // Circle aesthetics
-boolean circleOver;  // Is the mouse over the button?
-
 PImage img1;
 PImage imgTitle;
+int marksCounterMenu = 0;
+
+Square square0;
 
 void setup_GameMenu(){
   img1 = loadImage("ping-pong-face.png");
   imgTitle = loadImage("title.png");
-  circleColor = color(150);
-  circleHighlight = color(200);
-  circleX = width / 2;
-  circleY = height / 2;
+  int squareSize = 100;
+  square0 = new Square(width / 2, height / 2 + squareSize, 30, squareSize);
 }
 
 void draw_GameMenu(){
-  update();
   background(17, 69, 63);
-  
-  // If the mouse is over circle, change its color
-  if(circleOver){
-    fill(circleHighlight);
-  }
-  else{
-    fill(circleColor);
-  }
-  
-  stroke(0);
-  ellipse(circleX, circleY, circleSize, circleSize);
-  
-  fill(0, 255, 0);
-  textSize(10);
-  text("Start", circleX, circleY);
   
   image(img1, width - img1.width, height - img1.height);
   image(imgTitle, 0, 0);
-}
-
-/*
-  Check if the mouse is inside the circle
-  We could merge this method with overCircle,
-  but just in case in the future we want add
-  extra buttons
-*/
-void update(){
-  if(overCircle(circleX, circleY, circleSize)){
-    circleOver = true;
-  }
-  else{
-    circleOver = false;
-  }
-}
-
-/*
-  Check if the mouse is inside the circle
-  If so, return true, otherwise, return false
-*/
-boolean overCircle(int x, int y, int diameter){
-  float distX = x - mouseX;
-  float distY = y - mouseY;
-  if(sqrt(sq(distX) + sq(distY)) < diameter / 2){
-    return true;
-  }
-  else{
-    return false;
-  }
-}
-
-/*
-  Check wether the button has been pressed or not
-*/
-void mousePressed(){
-  if(circleOver){
-    circleOver = false;
+  
+  fill(150, 156, 123);
+  rect(square0.xpos, square0.ypos, square0.squareWidth, square0.squareWidth);
+   
+  fill(0);
+  ellipse(square0.xpos  + square0.margin, square0.ypos + square0.margin, 10 , 10);
+  ellipse(square0.xpos  + square0.squareWidth - square0.margin, square0.ypos + square0.margin, 10 , 10);
+  ellipse(square0.xpos  + square0.margin, square0.ypos + square0.squareWidth - square0.margin, 10 , 10);
+  ellipse(square0.xpos  + square0.squareWidth - square0.margin, square0.ypos + square0.squareWidth - square0.margin, 10 , 10);
+  
+  detectFiducialMarkMenu();
+  
+  // If the two players have been saved, pass to the game
+  if(marksCounterMenu == 1){
     stateOfGame = stateInstructions;
   }
-  else if(_circleOver){
-    stateOfGame = statePingPongGame;
+}
+
+void saveFiducialMark(TuioObject tobj){  
+  fill(255, 255, 255);
+  text("Center fiducial mark 1, please", 0, 0);
+  int markPosX = tobj.getScreenX(width);
+  int markPosY = tobj.getScreenY(height);
+  
+  if(marksCounterMenu != 1){
+    println("Quedan marcas por centrar");
+    if(markPosX > square0.xpos + square0.margin && markPosX < square0.xpos + square0.squareWidth - square0.margin && markPosY > square0.ypos + square0.margin && markPosY < square0.ypos + square0.squareWidth - square0.margin){
+      println("Marca fiducial" + tobj.getSymbolID() + " centrada");
+      marksCounterMenu++;
+    }
+  }
+  else{
+    print("NO quedan marcas por centrar");
+    
   }
 }
 
-/*
-void detectFiducialMarkPingPongGame(){
+void detectFiducialMarkMenu(){
   ArrayList<TuioObject> tuioObjectList = tuioClient.getTuioObjectList();
     for (int i=0;i<tuioObjectList.size();i++) {
        TuioObject tobj = tuioObjectList.get(i);
        println("Object position in screen: " + tobj.getScreenX(width) + ", " + tobj.getScreenY(height));
-       println("Paddle position in screen: " + paddleYPos);
+       //println("Paddle position in screen: " + paddleYPos);
        stroke(0);
        fill(0);
        // Operate the origin of the coordinate system
@@ -109,8 +80,6 @@ void detectFiducialMarkPingPongGame(){
        int gameYPos1 = (int)map(tobj.getScreenY(height), 60, height-60, 0, height);
        constrain(gameYPos1, 0, height);
        movePaddle1(gameYPos1);
-       while(stateOfGame == stateInstructions){
-         println("Instructions desde TUIO");
-       }
+       saveFiducialMark(tobj);
     }
-}*/
+}
