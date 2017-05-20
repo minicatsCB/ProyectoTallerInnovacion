@@ -63,9 +63,9 @@ void setup_PingPongGame(){
 
 void draw_PingPongGame(){
   background(bg);
+  
   noStroke();
   fill(255, 0, 0);
-  
   // Draw the ball
   ball.xpos = ball.xpos + (ball.xspeed * ball.xdir);
   ball.ypos = ball.ypos + (ball.yspeed * ball.ydir);
@@ -96,7 +96,6 @@ void draw_PingPongGame(){
   hasBounced();  
   detectFiducialMarkPingPongGame();
   isGameOver();
-  
 }
 
 // If the ball hits the side, GAME OVER
@@ -201,7 +200,7 @@ void detectFiducialMarkPingPongGame(){
     for (int i=0;i<tuioObjectList.size();i++) {
        TuioObject tobj = tuioObjectList.get(i);
        println("Object position in screen: " + tobj.getScreenX(width) + ", " + tobj.getScreenY(height));
-       println("Paddle position in screen: " + paddle1.ypos);
+       // println("Paddle position in screen: " + paddle1.ypos);
        stroke(0);
        fill(0);
        // Operate the origin of the coordinate system
@@ -221,12 +220,12 @@ void detectFiducialMarkPingPongGame(){
        popStyle();
        // Map the position camera screen -> game screen
        if(tobj.getSymbolID() == tuioObjectListToIgnore.get(0).getSymbolID()){
-         int gameYPos1 = (int)map(tobj.getScreenY(height), 60, height-60, 0, height);
+         int gameYPos1 = (int)map(tobj.getScreenY(height), 60, height - 60, 0, height);
          constrain(gameYPos1, 0, height);
          movePaddle1(gameYPos1);
        }
        else{
-         int gameYPos2 = (int)map(tobj.getScreenY(height), 60, height-60, 0, height);
+         int gameYPos2 = (int)map(tobj.getScreenY(height), 60, height - 60, 0, height);
          constrain(gameYPos2, 0, height);
          movePaddle2(gameYPos2);
        }
