@@ -17,14 +17,7 @@ void draw_GameMenu(){
   image(img1, width - img1.width, height - img1.height);
   image(imgTitle, 0, 0);
   
-  fill(150, 156, 123);
-  rect(square0.xpos, square0.ypos, square0.squareWidth, square0.squareWidth);
-   
-  fill(0);
-  ellipse(square0.xpos  + square0.margin, square0.ypos + square0.margin, 10 , 10);
-  ellipse(square0.xpos  + square0.squareWidth - square0.margin, square0.ypos + square0.margin, 10 , 10);
-  ellipse(square0.xpos  + square0.margin, square0.ypos + square0.squareWidth - square0.margin, 10 , 10);
-  ellipse(square0.xpos  + square0.squareWidth - square0.margin, square0.ypos + square0.squareWidth - square0.margin, 10 , 10);
+  drawSquare(square0);
   
   detectFiducialMarkMenu();
   
@@ -41,9 +34,9 @@ void saveFiducialMark(TuioObject tobj){
   int markPosY = tobj.getScreenY(height);
   
   if(marksCounterMenu != 1){
-    println("Quedan marcas por centrar");
+    //println("Quedan marcas por centrar");
     if(markPosX > square0.xpos + square0.margin && markPosX < square0.xpos + square0.squareWidth - square0.margin && markPosY > square0.ypos + square0.margin && markPosY < square0.ypos + square0.squareWidth - square0.margin){
-      println("Marca fiducial" + tobj.getSymbolID() + " centrada");
+      //println("Marca fiducial" + tobj.getSymbolID() + " centrada");
       marksCounterMenu++;
     }
   }
