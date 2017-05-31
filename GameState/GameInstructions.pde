@@ -10,8 +10,10 @@ class Square{
   int xpos, ypos;  // The position of the square that wait for the fiducial mark
   int margin;  // The distance from the borders of the original square to the borders of the smaller one
   int squareWidth;  // The size of the original square
+  int asignedPlayer;  // The player which the squre is asigned to
   
-  public Square(int xpos, int ypos, int margin, int squareWidth){
+  public Square(int asignedPlayer, int xpos, int ypos, int margin, int squareWidth){
+    this.asignedPlayer = asignedPlayer;
     this.xpos = xpos;
     this.ypos = ypos;
     this.margin = margin;
@@ -25,13 +27,13 @@ void setup_GameInstructions(){
   mark1Centered = false;
   mark2Centered = false;
   selectionTime = 5000;
+  int squareSize = 100;
+  square1 = new Square(1, (width / 2 - squareSize - squareSize / 2) - 100, height / 2 - squareSize, 30, squareSize);
+  square2 = new Square(2, (width / 2 + squareSize) + 100, height / 2 - squareSize, 30, squareSize);
 }
 
 void draw_GameInstructions(){
-  background(17, 69, 110);
-  int squareSize = 100;
-  square1 = new Square((width / 2 + squareSize) + 100, height / 2 - squareSize, 30, squareSize);
-  square2 = new Square((width / 2 - squareSize - squareSize / 2) - 100, height / 2 - squareSize, 30, squareSize);  
+  background(17, 69, 110);  
   
   drawSquare(square1);
   drawSquare(square2);
@@ -40,15 +42,16 @@ void draw_GameInstructions(){
   
   // If the two players have been saved, pass to the game
   if(marksCounter == 2 && (player1SkinSelected && player2SkinSelected)){
+    start.trigger();
+    start.trigger();
     stateOfGame = statePingPongGame;
   }
-  
-  fill(255, 0, 0);
-  ellipse(square2.xpos, square2.ypos, 10, 10);
 }
 
 void drawSquare(Square square){
-  fill(150, 156, 123);
+  if(square.asignedPlayer == 0) fill(255, 0, 0);
+  if(square.asignedPlayer == 1) fill(0, 255, 0);
+  if(square.asignedPlayer == 2) fill(0, 0, 255);
   rect(square.xpos, square.ypos, square.squareWidth, square.squareWidth);
   fill(0);
   ellipse(square.xpos  + square.margin, square.ypos + square.margin, 10 , 10);
@@ -80,7 +83,6 @@ void chooseSkin(TuioObject tobj, Square square){
   //println("tobjAngle: " + tobj.getAngleDegrees());
   fill(255, 50);
   noStroke();
-  println("Time before: " + timeBefore);
   if(tobj.getAngleDegrees() <= (45) || tobj.getAngleDegrees() >= (315)){
     //println("Derecha");
     arc(0, 0, 500, 500, -QUARTER_PI, QUARTER_PI);
@@ -90,12 +92,12 @@ void chooseSkin(TuioObject tobj, Square square){
       if(tobj.getSymbolID() == 1 && !player1SkinSelected){
         player1 = skins.get(0);
         player1SkinSelected = true;
-        println("Derecha seleccionada por 1!");
+        // println("Derecha seleccionada por 1!");
       }
       if(tobj.getSymbolID() == 2 && !player2SkinSelected){
         player2 = skins.get(0);
         player2SkinSelected = true;
-        println("Derecha seleccionada por 2");
+        // println("Derecha seleccionada por 2");
       }
     }
   }
@@ -153,9 +155,11 @@ void saveFiducialMarks(TuioObject tobj){
     //println("Quedan marcas por centrar");
     if(!mark1Centered){
         fill(255, 255, 255);
+        text("Center fiducial mark 1, please", square1.xpos - 150, square1.ypos - 100);
         // Check mark 1
         if(tobj.getSymbolID() == 1){
           if(markCenteredInSquare(square1, tobj)){
+            correct.trigger();
             mark1Centered = true;
             tuioObjectListToIgnore.add(tobj);
             marksCounter++;
@@ -168,9 +172,10 @@ void saveFiducialMarks(TuioObject tobj){
     }
     if(!mark2Centered){
       fill(255, 255, 255);
-      text("Center fiducial mark 2, please", width-500, 100);
+      text("Center fiducial mark 2, please", square2.xpos - 150, square2.ypos - 100);
       if(tobj.getSymbolID() == 2){
-        if(markCenteredInSquare(square2, tobj)){   
+        if(markCenteredInSquare(square2, tobj)){
+          correct.trigger();
           mark2Centered = true;
           tuioObjectListToIgnore.add(tobj);
           marksCounter++;
@@ -183,8 +188,8 @@ void saveFiducialMarks(TuioObject tobj){
   }
   else{
     fill(255, 255, 255);
-    if(!mark1Centered) text("Center fiducial mark 1, please", 0, 100);
-    if(!mark2Centered) text("Center fiducial mark 2, please", width-500, 100);
+    if(!mark1Centered) text("Center fiducial mark 1, please", width / 2, height / 2);
+    if(!mark2Centered) text("Center fiducial mark 2, please", width / 2, height / 2);
   }
 }
 
@@ -200,10 +205,6 @@ boolean markCenteredInSquare(Square targetSquare, TuioObject tobj){
      return false;
    }
 }
-
-
-
-
 
 void detectFiducialMarkInstructions(){
   ArrayList<TuioObject> tuioObjectList = tuioClient.getTuioObjectList();
