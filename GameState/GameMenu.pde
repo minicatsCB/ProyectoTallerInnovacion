@@ -8,7 +8,7 @@ void setup_GameMenu(){
   img1 = loadImage("ping-pong-face.png");
   imgTitle = loadImage("title.png");
   int squareSize = 100;
-  square0 = new Square(width / 2, height / 2 + squareSize, 30, squareSize);
+  square0 = new Square(0, width / 2, height / 2 + squareSize, 30, squareSize);
 }
 
 void draw_GameMenu(){
@@ -29,7 +29,6 @@ void draw_GameMenu(){
 
 void saveFiducialMark(TuioObject tobj){  
   fill(255, 255, 255);
-  text("Center fiducial mark 1, please", 0, 0);
   int markPosX = tobj.getScreenX(width);
   int markPosY = tobj.getScreenY(height);
   
@@ -38,6 +37,7 @@ void saveFiducialMark(TuioObject tobj){
     if(markPosX > square0.xpos + square0.margin && markPosX < square0.xpos + square0.squareWidth - square0.margin && markPosY > square0.ypos + square0.margin && markPosY < square0.ypos + square0.squareWidth - square0.margin){
       //println("Marca fiducial" + tobj.getSymbolID() + " centrada");
       marksCounterMenu++;
+      kick.trigger();
     }
   }
   else{
@@ -50,7 +50,7 @@ void detectFiducialMarkMenu(){
   ArrayList<TuioObject> tuioObjectList = tuioClient.getTuioObjectList();
     for (int i=0;i<tuioObjectList.size();i++) {
        TuioObject tobj = tuioObjectList.get(i);
-       println("Object position in screen: " + tobj.getScreenX(width) + ", " + tobj.getScreenY(height));
+       //println("Object position in screen: " + tobj.getScreenX(width) + ", " + tobj.getScreenY(height));
        //println("Paddle position in screen: " + paddleYPos);
        stroke(0);
        fill(0);
