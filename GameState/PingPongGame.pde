@@ -38,7 +38,7 @@ class Paddle{
       this.xpos =  width - this.paddleWidth;
     }
     this.ypos = height / 2;
-    this.lives = 2;
+    this.lives = 3;
   }
   
   public void ToString(){
@@ -80,16 +80,11 @@ void setup_PingPongGame(){
 }
 
 void draw_PingPongGame(){
-  background(bg);
-  
-  // Score
-  fill(0, 255, 0);
-  image(player1, 0,(height/7)-80);
-  image(player2, width - 80, (height/7)-80);
-  fill(0);
-  textSize(100);
-  text(paddle1.lives, 150, height/7);
-  text(paddle2.lives, width - 220, height/7);
+  //background(bg);
+   background(144, 12, 63);
+   stroke(255);
+   strokeWeight(20);
+   line(width/2, height, width/2, 0);
   
   noStroke();
   fill(255, 0, 0);
@@ -111,31 +106,37 @@ void draw_PingPongGame(){
   drawPaddle(paddle2);
   
   detectFiducialMarkPingPongGame();
-  isGameOver();
+  isGoal();
+  
+  // Score
+  fill(0, 255, 0);
+  image(player1, 0,(height/7)-80);
+  image(player2, width - 80, (height/7)-80);
+  fill(255);
+  textSize(100);
+  text(paddle1.lives, 150, height/7);
+  text(paddle2.lives, width - 220, height/7);
 }
 
 
 void drawPaddle(Paddle paddle){
   // Draw the paddle
-  if(paddle.number == 1) fill(255);
-  if(paddle.number == 2) fill(0);
+  if(paddle.number == 1) fill(243, 156, 18);
+  if(paddle.number == 2) fill(255, 87, 51);
   rect(paddle.xpos, paddle.ypos, paddle.paddleWidth, paddle.paddleHeight);
 }
 
 // If the ball hits the side, GAME OVER
-void isGameOver(){
+void isGoal(){
   if(ball.xpos <= ball.radius){
     fail.trigger();
-    println("Player 2 -> -1 life");
     paddle1.lives -= 1;
-    println(paddle1.lives);
   }
   if(ball.xpos >= width - ball.radius){
     fail.trigger();
-    println("Player 1 -> -1 life");
     paddle2.lives -= 1;
-    println(paddle2.lives);
   }
+  // Game over
   if(paddle1.lives == 0 || paddle2.lives == 0){
     gameOver.trigger();
     GameOver();
@@ -143,11 +144,27 @@ void isGameOver(){
 }
 
 void GameOver(){
-  backgroundMusic.close();
+  backgroundMusic.pause();
+  text("GAME OVER", width/2 - 200, height/2);
   stopLoop = true;
   noLoop();
   println("YA");
+  //restart();
 }
+
+/*
+void restart(){
+  // Resotore players lifes
+  paddle1.lives = 1;
+  paddle2.lives = 1;
+  // Resume game
+  loop();
+  backgroundMusic.rewind();
+  backgroundMusic.play();
+  ball.xpos = width / 2;
+  ball.ypos = height / 2;
+}
+*/
 
 // If the ball hits the paddle, change the movement direction
 void hasBounced(){
@@ -164,13 +181,11 @@ void hasBounced(){
 boolean onCollision(){
   if(ball.xpos >= width - paddle2.paddleWidth - ball.radius){
     if(ball.ypos >= paddle2.ypos && ball.ypos <= paddle2.ypos + paddle2.paddleHeight){
-      println("Col right");
       return true;
     }
   }
   if(ball.xpos <= paddle1.paddleWidth + ball.radius){
     if(ball.ypos >= paddle1.ypos && ball.ypos <= paddle1.ypos + paddle1.paddleHeight){
-      println("Col left");
       return true;
     }
   }
@@ -223,29 +238,6 @@ void movePaddle2(int tYPos){
     }
 }
 
-void drawLine(float x1, float y1, float x2,float y2){
-  line(x1, y1, x2, y2);
-}
-
-void drawLimitLines(){
-  float x1_1 = width - paddle1.paddleWidth - ball.radius;
-  fill(0);
-  drawLine(x1_1, height, x1_1, 0);
-  float x1_2 = width - paddle1.paddleWidth;
-  drawLine(x1_2, height,x1_2, 0);
-  
-  float x2_1 = paddle2.paddleWidth + ball.radius;
-  fill(0);
-  drawLine(x2_1, height, x2_1, 0);
-  float x2_2 = paddle2.paddleWidth;
-  drawLine(x2_2, height,x2_2, 0);
-}
-
-
-
-
-
-
 void detectFiducialMarkPingPongGame(){
   ArrayList<TuioObject> tuioObjectList = tuioClient.getTuioObjectList();
     for (int i=0;i<tuioObjectList.size();i++) {
@@ -261,14 +253,6 @@ void detectFiducialMarkPingPongGame(){
        // Rotate it the received (throgh the camera) angle
        rotate(tobj.getAngle());
        popMatrix();
-       fill(255, 0, 0);
-       // Move the ellipse along the TUIO Object
-       ellipse(tobj.getScreenX(width), tobj.getScreenY(height), 30, 30);
-       pushStyle();
-       fill(0,0,255);
-       textSize(30);
-       text(tobj.getSymbolID() + "  " + tobj.getScreenY(height), tobj.getScreenX(width), tobj.getScreenY(height));  // Object identifier
-       popStyle();
        // Map the position camera screen -> game screen
        if(tobj.getSymbolID() == tuioObjectListToIgnore.get(0).getSymbolID()){
          int gameYPos1 = (int)map(tobj.getScreenY(height), 60, height - 60, 0, height);
@@ -285,6 +269,3 @@ void detectFiducialMarkPingPongGame(){
        }
     }
 }
-
-// Add function for drawing paddle
-// Add function for game over result
