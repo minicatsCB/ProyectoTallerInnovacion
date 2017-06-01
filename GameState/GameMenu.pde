@@ -1,5 +1,7 @@
 PImage img1;
 PImage imgTitle;
+PFont fontCenterMark;
+
 int marksCounterMenu = 0;
 
 Square square0;
@@ -7,6 +9,8 @@ Square square0;
 void setup_GameMenu(){
   img1 = loadImage("ping-pong-face.png");
   imgTitle = loadImage("title.png");
+  fontCenterMark = createFont("IndieFlower.ttf", 32);
+  textFont(fontCenterMark);
   int squareSize = 100;
   square0 = new Square(0, width / 2, height / 2 + squareSize, 30, squareSize);
 }
@@ -65,9 +69,9 @@ void detectFiducialMarkMenu(){
        // Move the ellipse along the TUIO Object
        ellipse(tobj.getScreenX(width), tobj.getScreenY(height), 30, 30);
        pushStyle();
-       fill(0,0,255);
-       textSize(30);
-       text(tobj.getSymbolID() + "  " + tobj.getScreenY(height), tobj.getScreenX(width), tobj.getScreenY(height));  // Object identifier
+       fill(255);
+       textSize(20);
+       text(tobj.getSymbolID(), tobj.getScreenX(width) - 5, tobj.getScreenY(height) + 5);  // Object identifier
        popStyle();
        // Map the position camera screen -> game screen
        int gameYPos1 = (int)map(tobj.getScreenY(height), 60, height-60, 0, height);
@@ -76,3 +80,10 @@ void detectFiducialMarkMenu(){
        saveFiducialMark(tobj);
     }
 }
+
+// Fix colors
+// Fix text in TUIO object
+// Add font
+// Add selector image
+// Add restart game when Game Over
+// Minor fixes
