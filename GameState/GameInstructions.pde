@@ -6,6 +6,12 @@ boolean player1SkinSelected, player2SkinSelected;  // Has each player selected a
 int timeBefore;  // Time counter for selecting skin
 int selectionTime;  // Time the user has to choose a skin (in milliseconds)
 
+// Countdown timer
+private static final byte countdown = 5;
+private static int seconds, startTime;
+
+PImage selector;
+
 class Square{
   int xpos, ypos;  // The position of the square that wait for the fiducial mark
   int margin;  // The distance from the borders of the original square to the borders of the smaller one
@@ -24,6 +30,7 @@ class Square{
 Square square1, square2;
 
 void setup_GameInstructions(){
+  selector = loadImage("selector.png");
   mark1Centered = false;
   mark2Centered = false;
   selectionTime = 5000;
@@ -33,7 +40,7 @@ void setup_GameInstructions(){
 }
 
 void draw_GameInstructions(){
-  background(17, 69, 110);  
+  background(0);  
   
   drawSquare(square1);
   drawSquare(square2);
@@ -41,17 +48,24 @@ void draw_GameInstructions(){
   detectFiducialMarkInstructions();
   
   // If the two players have been saved, pass to the game
-  if(marksCounter == 2 && (player1SkinSelected && player2SkinSelected)){
-    start.trigger();
-    start.trigger();
-    stateOfGame = statePingPongGame;
+  if(marksCounter == 2){
+    textSize(50);
+    seconds = startTime - millis()/1000;
+    if (seconds < 0) startTime = millis()/1000 + countdown;
+    else text("Choose a skin, please ( " + seconds + " )", square1.xpos, square1.ypos + 300);
+    if(player1SkinSelected && player2SkinSelected){
+      start.trigger();
+      start.trigger();
+      stateOfGame = statePingPongGame;
+    }
   }
 }
 
 void drawSquare(Square square){
-  if(square.asignedPlayer == 0) fill(255, 0, 0);
-  if(square.asignedPlayer == 1) fill(0, 255, 0);
-  if(square.asignedPlayer == 2) fill(0, 0, 255);
+  if(square.asignedPlayer == 0) fill(218, 247, 166);
+  if(square.asignedPlayer == 1) fill(243, 156, 18);
+  if(square.asignedPlayer == 2) fill(255, 87, 51);
+  noStroke();
   rect(square.xpos, square.ypos, square.squareWidth, square.squareWidth);
   fill(0);
   ellipse(square.xpos  + square.margin, square.ypos + square.margin, 10 , 10);
@@ -60,11 +74,8 @@ void drawSquare(Square square){
   ellipse(square.xpos  + square.squareWidth - square.margin, square.ypos + square.squareWidth - square.margin, 10 , 10);
 }
 
-// We only need the position of the square
-void chooseSkin(TuioObject tobj, Square square){
-  int centerxpos, centerypos;
-  centerxpos = square.xpos + square.squareWidth/2;
-  centerypos = square.ypos + square.squareWidth/2;
+// We only need the position of the TUIO object in order to know its rotation
+void chooseSkin(TuioObject tobj){
   imageMode(CENTER);
   // Draw images around the square
   float r = height * 0.2;
@@ -74,35 +85,32 @@ void chooseSkin(TuioObject tobj, Square square){
     theta += TWO_PI/skins.size();
   }
   
-  float beta = 0;
   // Draw an arc from center to each image
   fill(255);
   pushMatrix();
   rotate(tobj.getAngle());
   popMatrix();
-  //println("tobjAngle: " + tobj.getAngleDegrees());
   fill(255, 50);
   noStroke();
+  // Right image
   if(tobj.getAngleDegrees() <= (45) || tobj.getAngleDegrees() >= (315)){
-    //println("Derecha");
     arc(0, 0, 500, 500, -QUARTER_PI, QUARTER_PI);
     // If a number of seconds have elapsed, select the skin
     if(millis() - timeBefore > selectionTime){
-      println("Tiempo pasado: " + (millis() - timeBefore));
+      // Player 1 selects right image
       if(tobj.getSymbolID() == 1 && !player1SkinSelected){
         player1 = skins.get(0);
         player1SkinSelected = true;
-        // println("Derecha seleccionada por 1!");
       }
+      // Player 2 selects right image
       if(tobj.getSymbolID() == 2 && !player2SkinSelected){
         player2 = skins.get(0);
         player2SkinSelected = true;
-        // println("Derecha seleccionada por 2");
       }
     }
   }
+  // Down image
   else if(tobj.getAngleDegrees() >= (45) && tobj.getAngleDegrees() <= (135)){
-   // println("Abajo");
     arc(0, 0, 500, 500, QUARTER_PI, HALF_PI + QUARTER_PI);
     // If number of seconds have elapsed, select the skin
     if(millis() - timeBefore > 10000){
@@ -116,8 +124,8 @@ void chooseSkin(TuioObject tobj, Square square){
       }
     }
   }
+  // Left image
   else if(tobj.getAngleDegrees() >= (135) && tobj.getAngleDegrees() <= (225)){
-    //println("Izquierda");
     arc(0, 0, 500, 500, HALF_PI + QUARTER_PI, PI + QUARTER_PI);
     // If a number of seconds have elapsed, select the skin
     if(millis() - timeBefore > selectionTime){
@@ -131,8 +139,8 @@ void chooseSkin(TuioObject tobj, Square square){
       }
     }
   }
+  // Up image
   else{
-   // println("Arriba");
     arc(0, 0, 500, 500, PI + QUARTER_PI, PI + QUARTER_PI + HALF_PI);
     // If a number seconds have elapsed, select the skin
     if(millis() - timeBefore > selectionTime){
@@ -155,6 +163,7 @@ void saveFiducialMarks(TuioObject tobj){
     //println("Quedan marcas por centrar");
     if(!mark1Centered){
         fill(255, 255, 255);
+        textFont(fontCenterMark);
         text("Center fiducial mark 1, please", square1.xpos - 150, square1.ypos - 100);
         // Check mark 1
         if(tobj.getSymbolID() == 1){
@@ -166,12 +175,14 @@ void saveFiducialMarks(TuioObject tobj){
             // Check if all marks have been saved to start a time counter
             if(marksCounter == 2){
               timeBefore = millis();
+              startTime = millis()/1000 + countdown;  // Start countdown timer
             }
           }
         }
     }
     if(!mark2Centered){
       fill(255, 255, 255);
+      textFont(fontCenterMark);
       text("Center fiducial mark 2, please", square2.xpos - 150, square2.ypos - 100);
       if(tobj.getSymbolID() == 2){
         if(markCenteredInSquare(square2, tobj)){
@@ -186,22 +197,16 @@ void saveFiducialMarks(TuioObject tobj){
       }
     }
   }
-  else{
-    fill(255, 255, 255);
-    if(!mark1Centered) text("Center fiducial mark 1, please", width / 2, height / 2);
-    if(!mark2Centered) text("Center fiducial mark 2, please", width / 2, height / 2);
-  }
 }
 
 boolean markCenteredInSquare(Square targetSquare, TuioObject tobj){
   int markPosX = tobj.getScreenX(width);
   int markPosY = tobj.getScreenY(height);
+  // Fiducial mark is centered when it is inside the square
   if(markPosX > targetSquare.xpos + targetSquare.margin && markPosX < targetSquare.xpos + targetSquare.squareWidth - targetSquare.margin && markPosY > targetSquare.ypos + targetSquare.margin && markPosY < square1.ypos + targetSquare.squareWidth - targetSquare.margin){
-      //println("Marca fiducial " + tobj.getSymbolID() + " centrada");
       return true;
    }
    else{
-     //println("Marca fiducial " + tobj.getSymbolID() + " NO centrada");
      return false;
    }
 }
@@ -217,7 +222,7 @@ void detectFiducialMarkInstructions(){
     // println("Object position in screen: " + tobj.getScreenX(width) + ", " + tobj.getScreenY(height));
      drawTuioObject(tobj);
      
-     // hacer esto solo si estamos en la fase de entrar
+     // Call this from here because we need the current TUIO object
      saveFiducialMarks(tobj);
    }
 }
@@ -225,43 +230,46 @@ void detectFiducialMarkInstructions(){
 void drawTuioObject(TuioObject tobj){
    stroke(0);
    fill(0);
-   // Operate the origin of the coordinate system
    pushMatrix();
-   // After saving fiducial marks, choose a skin, this is, anchor the TUIO objects to a position
-   // In this case, the position is the center of the squares
+   // After saving fiducial marks (marksCounter == 2), choose a skin, this is, anchor the TUIO objects to a position
+   // In this case, the position is the center of the square
    if(marksCounter == 2){
      int centerxpos, centerypos;  // Square center
      if(tobj.getSymbolID() == 1){
        centerxpos = square1.xpos + square1.squareWidth/2;
        centerypos = square1.ypos + square1.squareWidth/2;
        translate(centerxpos, centerypos);
-       chooseSkin(tobj, square1);
+       chooseSkin(tobj);
        fill(0);
      }
      if(tobj.getSymbolID() == 2){
        centerxpos = square2.xpos + square2.squareWidth/2;
        centerypos = square2.ypos + square2.squareWidth/2;
        translate(centerxpos, centerypos);
-       chooseSkin(tobj, square2);
+       chooseSkin(tobj);
        fill(0);
      }
+     // Rotate it the received (throgh the camera) angle
+     rotate(tobj.getAngle());
+     // Draw a rectangle behind the circle
+     //rect(-30,-30,60,60);
+     imageMode(CENTER);
+     rotate(radians(90));  // Adjust rotation image to go along the TUIO object
+     image(selector, 0, 0);
+     imageMode(CORNER);
    }
    else{
      // Translate it to the center of the object
      translate(tobj.getScreenX(width),tobj.getScreenY(height));
    }
-   // Rotate it the received (throgh the camera) angle
-   rotate(tobj.getAngle());
-   // Draw a rectangle behind the circle
-   rect(-30,-30,60,60);
    popMatrix();
    fill(255, 0, 0);
    if(marksCounter != 2){
      // Move the ellipse along the TUIO Object
      ellipse(tobj.getScreenX(width), tobj.getScreenY(height), 30, 30);
-     fill(0,0,255);
-     textSize(30);
-     text(tobj.getSymbolID() + "  " + tobj.getScreenY(height), tobj.getScreenX(width), tobj.getScreenY(height));  // Object identifier
+     fill(255);
+     textSize(20);
+     text(tobj.getSymbolID(), tobj.getScreenX(width) - 5, tobj.getScreenY(height) + 5);  // Object identifier
    }
    pushStyle();
    popStyle();
